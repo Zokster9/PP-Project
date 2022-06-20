@@ -12,9 +12,11 @@
 
 "int"                { yylval.i = INT;  return _TYPE; }
 "unsigned"           { yylval.i = UINT; return _TYPE; }
+"heap"               { yylval.i = HEAP; return _TYPE; }
 "if"                 { return _IF; }
 "else"               { return _ELSE; }
 "return"             { return _RETURN; }
+"create_heap"        { return _CREATE_HEAP; }
 
 "("                  { return _LPAREN; }
 ")"                  { return _RPAREN; }

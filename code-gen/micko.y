@@ -40,10 +40,11 @@
 %token _RBRACKET
 %token _ASSIGN
 %token _SEMICOLON
+%token _CREATE_HEAP
 %token <i> _AROP
 %token <i> _RELOP
 
-%type <i> num_exp exp literal
+%type <i> num_exp exp literal heap_exp
 %type <i> function_call argument rel_exp if_part
 
 %nonassoc ONLY_IF
@@ -120,9 +121,11 @@ variable
   : _TYPE _ID _SEMICOLON
       {
         if(lookup_symbol($2, VAR|PAR) == NO_INDEX)
-           insert_symbol($2, VAR, $1, ++var_num, NO_ATR);
-        else 
-           err("redefinition of '%s'", $2);
+          insert_symbol($2, VAR, $1, ++var_num, NO_ATR);
+        else if(lookup_symbol($2, HEAP) == NO_INDEX)
+          insert_symbol($2, HEAP, $1, ++var_num, NO_ATR);
+        else
+          err("redefinition of '%s'", $2);
       }
   ;
 
@@ -136,6 +139,7 @@ statement
   | assignment_statement
   | if_statement
   | return_statement
+  | heap_assignment_statement
   ;
 
 compound_statement
@@ -152,6 +156,25 @@ assignment_statement
           if(get_type(idx) != get_type($3))
             err("incompatible types in assignment");
         gen_mov($3, idx);
+      }
+  ;
+
+heap_assignment_statement
+  : _ID _ASSIGN heap_exp _SEMICOLON
+    {
+      int idx = lookup_symbol($1, HEAP);
+      if (idx == NO_INDEX)
+        err("invalid lvalue '%s' in assignment", $1);
+      else
+        if(get_type($3) != 1)
+          err("Type of size needs to be int!");
+    }
+  ;
+
+heap_exp
+  : _CREATE_HEAP _LPAREN literal _RPAREN
+      {
+        $$ = $3;
       }
   ;
 
