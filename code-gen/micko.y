@@ -41,6 +41,9 @@
 %token _ASSIGN
 %token _SEMICOLON
 %token _CREATE_HEAP
+%token _SIZE
+%token _DOT
+%token _IS_EMPTY
 %token <i> _AROP
 %token <i> _RELOP
 
@@ -140,6 +143,7 @@ statement
   | if_statement
   | return_statement
   | heap_assignment_statement
+  | heap_method_assignment_statement
   ;
 
 compound_statement
@@ -159,22 +163,39 @@ assignment_statement
       }
   ;
 
-heap_assignment_statement
+heap_method_assignment_statement
   : _ID _ASSIGN heap_exp _SEMICOLON
+    {
+      int idx = lookup_symbol($1, VAR|PAR);
+      if (idx == NO_INDEX)
+        err("invalid lvalue '%s' in assignment", $1);
+    }
+
+heap_assignment_statement
+  : _ID _ASSIGN _CREATE_HEAP _LPAREN literal _RPAREN _SEMICOLON
     {
       int idx = lookup_symbol($1, HEAP);
       if (idx == NO_INDEX)
         err("invalid lvalue '%s' in assignment", $1);
       else
-        if(get_type($3) != 1)
+        if(get_type($5) != 1)
           err("Type of size needs to be int!");
+      set_atr2(idx, atoi(get_name($5)));
     }
   ;
 
 heap_exp
-  : _CREATE_HEAP _LPAREN literal _RPAREN
+  : _ID _DOT _SIZE _LPAREN _RPAREN
       {
-        $$ = $3;
+        $$ = lookup_symbol($1, HEAP);
+        if ($$ == NO_INDEX)
+          err("'%s' is undeclared heap", $1);
+      }
+  | _ID _DOT _IS_EMPTY _LPAREN _RPAREN
+      {
+        $$ = lookup_symbol($1, HEAP);
+        if ($$ == NO_INDEX)
+          err("'%s' is undeclared heap", $1);
       }
   ;
 

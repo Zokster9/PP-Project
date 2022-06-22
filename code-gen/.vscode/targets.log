@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue Jun 21 00:53:28 2022
+# Make data base, printed on Wed Jun 22 11:14:29 2022
 
 # Variables
 
@@ -55,7 +55,7 @@ VTE_VERSION = 6003
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
 # environment
-JOURNAL_STREAM = 8:31121
+JOURNAL_STREAM = 8:30961
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # environment
@@ -79,11 +79,11 @@ XDG_DATA_DIRS = /usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/d
 # makefile (from 'Makefile', line 10)
 CGENH = codegen.h
 # environment
-DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus,guid=3edd2200ce2732891d351ba862b0c496
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus,guid=089a225aa73158af0b9cd4a562b2dd04
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-MANAGERPID = 1001
+MANAGERPID = 1005
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -101,7 +101,7 @@ CGENC = codegen.c
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/zokster-VirtualBox:@/tmp/.ICE-unix/1266,unix/zokster-VirtualBox:/tmp/.ICE-unix/1266
+SESSION_MANAGER = local/zokster-VirtualBox:@/tmp/.ICE-unix/1272,unix/zokster-VirtualBox:/tmp/.ICE-unix/1272
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -119,7 +119,7 @@ DISABLE_WAYLAND = 1
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-INVOCATION_ID = 23cb980c2c9a4d97a68d59bcdaa9e3d7
+INVOCATION_ID = 72f816bce01b446bbbd27a1c8eba7a8e
 # environment
 GDK_PIXBUF_MODULEDIR = /snap/code/99/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
 # default
@@ -161,7 +161,7 @@ VSCODE_CODE_CACHE_PATH = /home/zokster/.config/Code/CachedData/30d9c6cd9483b2cc5
 # environment
 LOGNAME = zokster
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 SNAP_LIBRARY_PATH = /var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void
 # environment
@@ -201,7 +201,7 @@ ASM = true
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-12202ed6-825f-45e7-9584-2b98ea41001d.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-a993b802-4f22-44c2-94e1-50fcd926303b.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -261,11 +261,11 @@ LC_ALL = C
 # environment
 DBUS_STARTER_BUS_TYPE = session
 # environment
-GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/a683bdd9_10b7_4e5f_bea9_ca4e73f4ff4a
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/d761e661_c551_460e_9e97_f238a03a846a
 # automatic
 ^F = $(notdir $^)
 # environment
-GNOME_TERMINAL_SERVICE = :1.107
+GNOME_TERMINAL_SERVICE = :1.74
 # default
 SUFFIXES := 
 # makefile (from 'Makefile', line 19)
@@ -290,9 +290,9 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 6880
+VSCODE_PID = 2767
 # environment
-DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=3edd2200ce2732891d351ba862b0c496
+DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=089a225aa73158af0b9cd4a562b2dd04
 # variable set hash-table stats:
 # Load=140/1024=14%, Rehash=0, Collisions=29/188=15%
 
@@ -302,9 +302,9 @@ DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=3edd2200ce2732891d351ba
 
 # Directories
 
-# . (device 2053, inode 1181921): 17 files, no impossibilities.
+# . (device 2053, inode 1181921): 18 files, no impossibilities.
 
-# 17 files, no impossibilities in 1 directories.
+# 18 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -623,12 +623,12 @@ defs.h:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 31 / storage = 258 B / avg = 8 B
-# current buf: size = 8162 B / used = 258 B / count = 31 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 32 / storage = 270 B / avg = 8 B
+# current buf: size = 8162 B / used = 270 B / count = 32 / avg = 8 B
 
-# strcache performance: lookups = 62 / hit rate = 50%
+# strcache performance: lookups = 63 / hit rate = 49%
 # hash-table stats:
-# Load=31/8192=0%, Rehash=0, Collisions=1/62=2%
-# Finished Make data base on Tue Jun 21 00:53:28 2022
+# Load=32/8192=0%, Rehash=0, Collisions=1/63=2%
+# Finished Make data base on Wed Jun 22 11:14:29 2022
 
  

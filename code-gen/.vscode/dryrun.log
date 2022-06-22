@@ -1,0 +1,24 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/zokster/Desktop/PP-Project/code-gen'
+echo -e "\e[01;32mBISON...\e[00m"
+bison -d -v micko.y 2>&1 | tee .make.outb; exit ${PIPESTATUS[0]}
+echo -e "\e[01;32mFLEX...\e[00m"
+flex micko.l 2>&1 | tee .make.outf; exit ${PIPESTATUS[0]}
+if [ "./hipsim-src/Makefile" != "" ]; then \
+	echo -e "\e[01;32mSIMULATOR...\e[00m"; \
+	make --silent -C ./hipsim-src/ SIMULATOR_PATH=../; \
+fi
+echo -e "\e[01;32mGCC...\e[00m"
+rm -f micko .make.out2 2>/dev/null
+gcc -o micko lex.yy.c micko.tab.c symtab.c codegen.c 2>&1 | tee .make.outg; pstat=${PIPESTATUS[0]}; \
+cat .make.outf .make.outb .make.outg > .make.out 2>/dev/null; \
+out=`grep -Ei "conflict|warning|error" .make.out 2>/dev/null`; \
+if [ "$out" != "" ]; then \
+	cat .make.outf .make.outb; \
+	echo -e "\e[01;31m\nThere are errors/warnings in grammar/actions!\n\e[00m" ; \
+	rm -f micko 2>/dev/null ; \
+	exit 1; \
+fi; \
+exit $pstat
+make: Leaving directory '/home/zokster/Desktop/PP-Project/code-gen'
+ 

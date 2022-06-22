@@ -24,6 +24,9 @@
 "}"                  { return _RBRACKET; }
 ";"                  { return _SEMICOLON; }
 "="                  { return _ASSIGN; }
+"."                  { return _DOT; }
+"size"               { return _SIZE; }
+"isEmpty"            { return _IS_EMPTY; }
 
 "+"                  { yylval.i = ADD; return _AROP; }
 "-"                  { yylval.i = SUB; return _AROP; }

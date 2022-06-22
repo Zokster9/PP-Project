@@ -1,6 +1,0 @@
--o
-micko
-lex.yy.c
-micko.tab.c
-symtab.c
-codegen.c
