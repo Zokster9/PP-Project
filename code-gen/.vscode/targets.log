@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Wed Jun 22 11:14:29 2022
+# Make data base, printed on Sat Jun 25 09:17:29 2022
 
 # Variables
 
@@ -55,7 +55,7 @@ VTE_VERSION = 6003
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
 # environment
-JOURNAL_STREAM = 8:30961
+JOURNAL_STREAM = 8:30417
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # environment
@@ -79,11 +79,11 @@ XDG_DATA_DIRS = /usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/d
 # makefile (from 'Makefile', line 10)
 CGENH = codegen.h
 # environment
-DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus,guid=089a225aa73158af0b9cd4a562b2dd04
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus,guid=85ae1af43094ac85acd25f1a62b6b2d6
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-MANAGERPID = 1005
+MANAGERPID = 977
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -101,7 +101,7 @@ CGENC = codegen.c
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/zokster-VirtualBox:@/tmp/.ICE-unix/1272,unix/zokster-VirtualBox:/tmp/.ICE-unix/1272
+SESSION_MANAGER = local/zokster-VirtualBox:@/tmp/.ICE-unix/1236,unix/zokster-VirtualBox:/tmp/.ICE-unix/1236
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -119,7 +119,7 @@ DISABLE_WAYLAND = 1
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-INVOCATION_ID = 72f816bce01b446bbbd27a1c8eba7a8e
+INVOCATION_ID = 4b8adacd83864c1e911fad5b2b927f37
 # environment
 GDK_PIXBUF_MODULEDIR = /snap/code/99/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
 # default
@@ -143,7 +143,7 @@ PWD = /home/zokster/Desktop/PP-Project/code-gen
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1226
+SSH_AGENT_PID = 1196
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -201,7 +201,7 @@ ASM = true
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-a993b802-4f22-44c2-94e1-50fcd926303b.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-5588094c-6666-4d05-876c-df5aef3a2d89.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -261,11 +261,11 @@ LC_ALL = C
 # environment
 DBUS_STARTER_BUS_TYPE = session
 # environment
-GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/d761e661_c551_460e_9e97_f238a03a846a
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/23070ced_6b72_4743_ad31_969f76026f9a
 # automatic
 ^F = $(notdir $^)
 # environment
-GNOME_TERMINAL_SERVICE = :1.74
+GNOME_TERMINAL_SERVICE = :1.76
 # default
 SUFFIXES := 
 # makefile (from 'Makefile', line 19)
@@ -290,9 +290,9 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 2767
+VSCODE_PID = 3707
 # environment
-DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=089a225aa73158af0b9cd4a562b2dd04
+DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=85ae1af43094ac85acd25f1a62b6b2d6
 # variable set hash-table stats:
 # Load=140/1024=14%, Rehash=0, Collisions=29/188=15%
 
@@ -302,9 +302,9 @@ DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=089a225aa73158af0b9cd4a
 
 # Directories
 
-# . (device 2053, inode 1181921): 18 files, no impossibilities.
+# . (device 2053, inode 1181921): 19 files, no impossibilities.
 
-# 18 files, no impossibilities in 1 directories.
+# 19 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -623,12 +623,12 @@ defs.h:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 32 / storage = 270 B / avg = 8 B
-# current buf: size = 8162 B / used = 270 B / count = 32 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 33 / storage = 282 B / avg = 8 B
+# current buf: size = 8162 B / used = 282 B / count = 33 / avg = 8 B
 
-# strcache performance: lookups = 63 / hit rate = 49%
+# strcache performance: lookups = 64 / hit rate = 48%
 # hash-table stats:
-# Load=32/8192=0%, Rehash=0, Collisions=1/63=2%
-# Finished Make data base on Wed Jun 22 11:14:29 2022
+# Load=33/8192=0%, Rehash=0, Collisions=1/64=2%
+# Finished Make data base on Sat Jun 25 09:17:29 2022
 
  

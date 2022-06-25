@@ -1,11 +1,10 @@
 //OPIS: heap isEmpty dodela
+//RETURN: 0
 int main() {
-    heap h;
+    heap h = create_heap();
     int a;
-
-    h = create_heap(2);
 
     a = h.isEmpty();
     
-    return 0;
+    return a;
 }

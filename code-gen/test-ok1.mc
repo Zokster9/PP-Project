@@ -1,8 +1,6 @@
 //OPIS: heap create
 int main() {
-    heap h;
-
-    h = create_heap(2);
+    heap h = create_heap(); 
     
     return 0;
 }

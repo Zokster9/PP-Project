@@ -16,6 +16,9 @@
   int error_count = 0;
   int warning_count = 0;
   int var_num = 0;
+  int heaps[100][50];
+  int heap_declarations[100];
+  int heap_num = 0;
   int fun_idx = -1;
   int fcall_idx = -1;
   int lab_num = -1;
@@ -47,7 +50,7 @@
 %token <i> _AROP
 %token <i> _RELOP
 
-%type <i> num_exp exp literal heap_exp
+%type <i> num_exp exp literal heap_size_exp heap_is_empty_exp
 %type <i> function_call argument rel_exp if_part
 
 %nonassoc ONLY_IF
@@ -108,8 +111,18 @@ parameter
 body
   : _LBRACKET variable_list
       {
-        if(var_num)
-          code("\n\t\tSUBS\t%%15,$%d,%%15", 4*var_num);
+        if(var_num) 
+        {
+          if (heap_num)
+          {
+            int places = (var_num - heap_num) + heap_num * 50;
+            code("\n\t\tSUBS\t%%15,$%d,%%15", 4*places);
+          }
+          else
+          {
+            code("\n\t\tSUBS\t%%15,$%d,%%15", 4*var_num);
+          }
+        }
         code("\n@%s_body:", get_name(fun_idx));
       }
     statement_list _RBRACKET
@@ -123,10 +136,19 @@ variable_list
 variable
   : _TYPE _ID _SEMICOLON
       {
-        if(lookup_symbol($2, VAR|PAR) == NO_INDEX)
+        if(lookup_symbol($2, VAR|PAR|HEAP) == NO_INDEX)
           insert_symbol($2, VAR, $1, ++var_num, NO_ATR);
-        else if(lookup_symbol($2, HEAP) == NO_INDEX)
-          insert_symbol($2, HEAP, $1, ++var_num, NO_ATR);
+        else
+          err("redefinition of '%s'", $2);
+      }
+  | _TYPE _ID _ASSIGN _CREATE_HEAP _LPAREN _RPAREN _SEMICOLON
+      {
+        if(lookup_symbol($2, VAR|PAR|HEAP) == NO_INDEX) 
+        {
+          int idx = insert_symbol($2, HEAP, $1, ++var_num, 0);
+          heap_declarations[heap_num] = idx;
+          heap_num++;
+        }
         else
           err("redefinition of '%s'", $2);
       }
@@ -142,8 +164,6 @@ statement
   | assignment_statement
   | if_statement
   | return_statement
-  | heap_assignment_statement
-  | heap_method_assignment_statement
   ;
 
 compound_statement
@@ -161,41 +181,48 @@ assignment_statement
             err("incompatible types in assignment");
         gen_mov($3, idx);
       }
-  ;
-
-heap_method_assignment_statement
-  : _ID _ASSIGN heap_exp _SEMICOLON
+  | _ID _ASSIGN heap_size_exp _SEMICOLON
+      {
+        int idx = lookup_symbol($1, VAR|PAR);
+        if(idx == NO_INDEX)
+          err("invalid lvalue '%s' in assignment", $1);
+        if (get_type(idx) != 1)
+          err("incompatible types in assignment");
+        code("\n\t\tMOV\t\t$%d, ", $3);
+        gen_sym_name(idx);
+      }
+  | _ID _ASSIGN heap_is_empty_exp _SEMICOLON
     {
       int idx = lookup_symbol($1, VAR|PAR);
-      if (idx == NO_INDEX)
+      if(idx == NO_INDEX)
         err("invalid lvalue '%s' in assignment", $1);
-    }
-
-heap_assignment_statement
-  : _ID _ASSIGN _CREATE_HEAP _LPAREN literal _RPAREN _SEMICOLON
-    {
-      int idx = lookup_symbol($1, HEAP);
-      if (idx == NO_INDEX)
-        err("invalid lvalue '%s' in assignment", $1);
+      if (get_type(idx) != 1)
+        err("incompatible types in assignment");
+      if ($3 == 0)
+        code("\n\t\tMOV\t\t$0, ");
       else
-        if(get_type($5) != 1)
-          err("Type of size needs to be int!");
-      set_atr2(idx, atoi(get_name($5)));
+        code("\n\t\tMOV\t\t$1, ");
+      gen_sym_name(idx);
     }
   ;
 
-heap_exp
+heap_size_exp
   : _ID _DOT _SIZE _LPAREN _RPAREN
       {
-        $$ = lookup_symbol($1, HEAP);
-        if ($$ == NO_INDEX)
-          err("'%s' is undeclared heap", $1);
+        int idx = lookup_symbol($1, HEAP);
+        if (idx == NO_INDEX)
+          err("heap '%s' is undeclared", $1);
+        $$ = get_atr2(idx);
       }
-  | _ID _DOT _IS_EMPTY _LPAREN _RPAREN
+  ;
+
+heap_is_empty_exp
+  : _ID _DOT _IS_EMPTY _LPAREN _RPAREN
       {
-        $$ = lookup_symbol($1, HEAP);
-        if ($$ == NO_INDEX)
-          err("'%s' is undeclared heap", $1);
+        int idx = lookup_symbol($1, HEAP);
+        if (idx == NO_INDEX)
+          err("heap '%s' is undeclared", $1);
+        $$ = get_atr2(idx);
       }
   ;
 
