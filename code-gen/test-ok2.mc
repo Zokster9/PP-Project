@@ -1,10 +1,11 @@
 //OPIS: heap size dodela
-//RETURN: 0
+//RETURN: 1
 int main() {
-    heap h = create_heap();
     int a;
-
-    a = h.size();
+    heap h = create_heap();
     
-    return a;
+
+    h.push(4);
+    
+    return h.size();
 }

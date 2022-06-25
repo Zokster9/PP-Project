@@ -27,6 +27,8 @@
 "."                  { return _DOT; }
 "size"               { return _SIZE; }
 "isEmpty"            { return _IS_EMPTY; }
+"push"               { return _PUSH; }
+"root"               { return _ROOT; }
 
 "+"                  { yylval.i = ADD; return _AROP; }
 "-"                  { yylval.i = SUB; return _AROP; }

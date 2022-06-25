@@ -47,10 +47,12 @@
 %token _SIZE
 %token _DOT
 %token _IS_EMPTY
+%token _PUSH
+%token _ROOT
 %token <i> _AROP
 %token <i> _RELOP
 
-%type <i> num_exp exp literal heap_size_exp heap_is_empty_exp
+%type <i> num_exp exp literal heap_size_exp heap_is_empty_exp heap_root_exp
 %type <i> function_call argument rel_exp if_part
 
 %nonassoc ONLY_IF
@@ -137,7 +139,11 @@ variable
   : _TYPE _ID _SEMICOLON
       {
         if(lookup_symbol($2, VAR|PAR|HEAP) == NO_INDEX)
-          insert_symbol($2, VAR, $1, ++var_num, NO_ATR);
+        {
+          var_num++;
+          int place = (var_num - heap_num) + heap_num * 50;
+          insert_symbol($2, VAR, $1, place, NO_ATR);
+        }
         else
           err("redefinition of '%s'", $2);
       }
@@ -145,7 +151,9 @@ variable
       {
         if(lookup_symbol($2, VAR|PAR|HEAP) == NO_INDEX) 
         {
-          int idx = insert_symbol($2, HEAP, $1, ++var_num, 0);
+          var_num++;
+          int place = (var_num - heap_num) + heap_num * 50;
+          int idx = insert_symbol($2, HEAP, $1, place, 0);
           heap_declarations[heap_num] = idx;
           heap_num++;
         }
@@ -164,6 +172,62 @@ statement
   | assignment_statement
   | if_statement
   | return_statement
+  | heap_push_statement
+  ;
+
+heap_push_statement
+  : _ID _DOT _PUSH _LPAREN literal _RPAREN _SEMICOLON
+      {
+        int idx = lookup_symbol($1, HEAP);
+        if (idx == NO_INDEX)
+          err("heap '%s' is undeclared", $1);
+        if (get_type($5) != 1)
+          err("incompatible types in assignment");
+        int heap_idx = 0;
+        for (int i = 0; i < heap_num; i++) {
+          if (idx == heap_declarations[i]) {
+            heap_idx = i;
+            break;
+          }
+        }
+        int size = get_atr2(idx);
+        int new_elem = atoi(get_name($5));
+        int new_elem_idx = size;
+        heaps[heap_idx][new_elem_idx] = new_elem;
+        set_atr2(idx, ++size);
+        int place = (get_atr1(idx) + new_elem_idx) * 4;
+        code("\n\t\tMOV\t\t$%d,-%d(%%14)", new_elem, place);
+        if (size != 1)
+        {
+          while(1)
+          {
+            int parent_elem = heaps[heap_idx][(new_elem_idx - 1) / 2];
+            if (parent_elem <= new_elem)
+            {
+              break;
+            }
+            heaps[heap_idx][(new_elem_idx - 1) / 2] = new_elem;
+            heaps[heap_idx][new_elem_idx] = parent_elem;
+
+            int reg = take_reg();
+            int parent_place = (get_atr1(idx) + (new_elem_idx - 1) / 2) * 4;
+            int new_elem_place = (get_atr1(idx) + new_elem_idx) * 4;
+            code("\n\t\tMOV\t\t-%d(%%14),", parent_place);
+            gen_sym_name(reg);
+
+            code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", new_elem_place, parent_place);
+            
+            code("\n\t\tMOV\t\t");
+            gen_sym_name(reg);
+            code(",-%d(%%14)", new_elem_place);
+            free_if_reg(reg);
+
+            if (new_elem_idx == 0)
+              break;
+            new_elem_idx = (new_elem_idx - 1) / 2;
+          }
+        }
+      }
   ;
 
 compound_statement
@@ -188,7 +252,7 @@ assignment_statement
           err("invalid lvalue '%s' in assignment", $1);
         if (get_type(idx) != 1)
           err("incompatible types in assignment");
-        code("\n\t\tMOV\t\t$%d, ", $3);
+        code("\n\t\tMOV\t\t$%d,", $3);
         gen_sym_name(idx);
       }
   | _ID _ASSIGN heap_is_empty_exp _SEMICOLON
@@ -199,11 +263,21 @@ assignment_statement
       if (get_type(idx) != 1)
         err("incompatible types in assignment");
       if ($3 == 0)
-        code("\n\t\tMOV\t\t$0, ");
+        code("\n\t\tMOV\t\t$1,");
       else
-        code("\n\t\tMOV\t\t$1, ");
+        code("\n\t\tMOV\t\t$0,");
       gen_sym_name(idx);
     }
+  | _ID _ASSIGN heap_root_exp _SEMICOLON
+      {
+        int idx = lookup_symbol($1, VAR|PAR);
+        if(idx == NO_INDEX)
+          err("invalid lvalue '%s' in assignment", $1);
+        if (get_type(idx) != 1)
+          err("incompatible types in assignment");
+        code("\n\t\tMOV\t\t$%d,", $3);
+        gen_sym_name(idx);
+      }
   ;
 
 heap_size_exp
@@ -223,6 +297,25 @@ heap_is_empty_exp
         if (idx == NO_INDEX)
           err("heap '%s' is undeclared", $1);
         $$ = get_atr2(idx);
+      }
+  ;
+
+heap_root_exp
+  : _ID _DOT _ROOT _LPAREN _RPAREN
+      {
+        int idx = lookup_symbol($1, HEAP);
+        if (idx == NO_INDEX)
+          err("heap '%s' is undeclared", $1);
+        int heap_index = 0;
+        for (int i = 0; i < heap_num; i++) 
+        {
+          if (idx == heap_declarations[i])
+          {
+            heap_index = i;
+            break;
+          }
+        }
+        $$ = heaps[heap_index][0];
       }
   ;
 
@@ -353,6 +446,33 @@ return_statement
           err("incompatible types in return");
         gen_mov($2, FUN_REG);
         code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));        
+      }
+  | _RETURN heap_size_exp _SEMICOLON
+      {
+        if(get_type(fun_idx) != 1)
+          err("incompatible types in return");
+        code("\n\t\tMOV\t\t$%d,", $2);
+        gen_sym_name(FUN_REG);
+        code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));
+      }
+  | _RETURN heap_is_empty_exp _SEMICOLON
+      {
+        if(get_type(fun_idx) != 1)
+          err("incompatible types in return");
+        if ($2 == 0)
+          code("\n\t\tMOV\t\t$1,");
+        else
+          code("\n\t\tMOV\t\t$0,");
+        gen_sym_name(FUN_REG);
+        code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));
+      }
+  | _RETURN heap_root_exp _SEMICOLON
+      {
+        if(get_type(fun_idx) != 1)
+          err("incompatible types in return");
+        code("\n\t\tMOV\t\t$%d,", $2);
+        gen_sym_name(FUN_REG);
+        code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));
       }
   ;
 
