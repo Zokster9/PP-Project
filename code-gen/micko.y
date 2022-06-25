@@ -49,10 +49,11 @@
 %token _IS_EMPTY
 %token _PUSH
 %token _ROOT
+%token _POP
 %token <i> _AROP
 %token <i> _RELOP
 
-%type <i> num_exp exp literal heap_size_exp heap_is_empty_exp heap_root_exp
+%type <i> num_exp exp literal heap_size_exp heap_is_empty_exp heap_root_exp heap_pop_exp
 %type <i> function_call argument rel_exp if_part
 
 %nonassoc ONLY_IF
@@ -275,8 +276,154 @@ assignment_statement
           err("invalid lvalue '%s' in assignment", $1);
         if (get_type(idx) != 1)
           err("incompatible types in assignment");
-        code("\n\t\tMOV\t\t$%d,", $3);
-        gen_sym_name(idx);
+        gen_mov($3, idx);
+      }
+  | _ID _ASSIGN heap_pop_exp _SEMICOLON
+      {
+        int var_idx = lookup_symbol($1, VAR|PAR);
+        if(var_idx == NO_INDEX)
+          err("invalid lvalue '%s' in assignment", $1);
+        if (get_type(var_idx) != 1)
+          err("incompatible types in assignment");
+        gen_mov($3, var_idx);
+        int idx = $3;
+        int heap_idx = 0;
+        for (int i = 0; i < heap_num; i++) 
+        {
+          if (idx == heap_declarations[i])
+          {
+            heap_idx = i;
+            break;
+          }
+        }
+        
+        int size = get_atr2(idx);
+        int last_element_place = (get_atr1(idx) + size - 1) * 4;
+        int root_element_place = get_atr1(idx) * 4;
+        heaps[heap_idx][0] = heaps[heap_idx][size - 1];
+        heaps[heap_idx][size - 1] = 0;
+        code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", last_element_place, root_element_place);
+        code("\n\t\tMOV\t\t$0,-%d(%%14)", last_element_place);
+        size--;
+        set_atr2(idx, size);
+        int i = 0;
+        while(1)
+        {
+          int propagation_elem = heaps[heap_idx][i];
+          int left_child_idx = 2 * i + 1;
+          int right_child_idx = 2 * i + 2;
+          int left_child = -1;
+          int right_child = -1;
+          if (left_child_idx < size)
+            left_child = heaps[heap_idx][left_child_idx];
+          if (right_child_idx < size)
+            right_child = heaps[heap_idx][right_child_idx];
+          if (left_child == -1 && right_child == -1)
+            break;
+          else if (left_child == -1 && right_child != -1)
+          {
+            if (propagation_elem > right_child)
+            {
+              int elem = heaps[heap_idx][i];
+              heaps[heap_idx][i] = heaps[heap_idx][right_child_idx];
+              heaps[heap_idx][right_child_idx] = elem;
+
+              int reg = take_reg();
+              int propagation_elem_place = (get_atr1(idx) + i) * 4;
+              int right_child_place = (get_atr1(idx) + right_child_idx) * 4;
+              code("\n\t\tMOV\t\t-%d(%%14),", propagation_elem_place);
+              gen_sym_name(reg);
+
+              code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", right_child_place, propagation_elem_place);
+              
+              code("\n\t\tMOV\t\t");
+              gen_sym_name(reg);
+              code(",-%d(%%14)", right_child_place);
+              free_if_reg(reg);
+              i = right_child_idx;
+            }
+            else
+              break;
+          }
+          else if (left_child != -1 && right_child == -1)
+          {
+            if (propagation_elem > left_child)
+            {
+              int elem = heaps[heap_idx][i];
+              heaps[heap_idx][i] = heaps[heap_idx][left_child_idx];
+              heaps[heap_idx][left_child_idx] = elem;
+
+              int reg = take_reg();
+              int propagation_elem_place = (get_atr1(idx) + i) * 4;
+              int left_child_place = (get_atr1(idx) + left_child_idx) * 4;
+              code("\n\t\tMOV\t\t-%d(%%14),", propagation_elem_place);
+              gen_sym_name(reg);
+
+              code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", left_child_place, propagation_elem_place);
+              
+              code("\n\t\tMOV\t\t");
+              gen_sym_name(reg);
+              code(",-%d(%%14)", left_child_place);
+              free_if_reg(reg);
+              i = left_child_idx;
+            }
+            else
+              break;
+          }
+          else if (left_child != -1 && right_child != -1)
+          {
+            if (left_child < right_child)
+            {
+              if (propagation_elem > left_child)
+              {
+                int elem = heaps[heap_idx][i];
+                heaps[heap_idx][i] = heaps[heap_idx][left_child_idx];
+                heaps[heap_idx][left_child_idx] = elem;
+
+                int reg = take_reg();
+                int propagation_elem_place = (get_atr1(idx) + i) * 4;
+                int left_child_place = (get_atr1(idx) + left_child_idx) * 4;
+                code("\n\t\tMOV\t\t-%d(%%14),", propagation_elem_place);
+                gen_sym_name(reg);
+
+                code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", left_child_place, propagation_elem_place);
+                
+                code("\n\t\tMOV\t\t");
+                gen_sym_name(reg);
+                code(",-%d(%%14)", left_child_place);
+                free_if_reg(reg);
+                i = left_child_idx;
+              }
+              else
+                break;
+            }
+            else if (right_child <= left_child)
+            {
+              if (propagation_elem > right_child)
+              {
+                int elem = heaps[heap_idx][i];
+                heaps[heap_idx][i] = heaps[heap_idx][right_child_idx];
+                heaps[heap_idx][right_child_idx] = elem;
+
+                int reg = take_reg();
+                int propagation_elem_place = (get_atr1(idx) + i) * 4;
+                int right_child_place = (get_atr1(idx) + right_child_idx) * 4;
+                code("\n\t\tMOV\t\t-%d(%%14),", propagation_elem_place);
+                gen_sym_name(reg);
+
+                code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", right_child_place, propagation_elem_place);
+                
+                code("\n\t\tMOV\t\t");
+                gen_sym_name(reg);
+                code(",-%d(%%14)", right_child_place);
+                free_if_reg(reg);
+                i = right_child_idx;
+              }
+              else
+                break;
+            }
+          }
+        }
       }
   ;
 
@@ -315,7 +462,19 @@ heap_root_exp
             break;
           }
         }
-        $$ = heaps[heap_index][0];
+        $$ = idx;
+      }
+  ;
+
+heap_pop_exp
+  : _ID _DOT _POP _LPAREN _RPAREN
+      {
+        int idx = lookup_symbol($1, HEAP);
+        if (idx == NO_INDEX)
+          err("heap '%s' is undeclared", $1);
+        if (get_atr2(idx) == 0)
+          err("heap '%s' is empty", $1);
+        $$ = idx;
       }
   ;
 
@@ -326,6 +485,20 @@ num_exp
       {
         if(get_type($1) != get_type($3))
           err("invalid operands: arithmetic operation");
+        int t1 = get_type($1);    
+        code("\n\t\t%s\t", ar_instructions[$2 + (t1 - 1) * AROP_NUMBER]);
+        gen_sym_name($1);
+        code(",");
+        gen_sym_name($3);
+        code(",");
+        free_if_reg($3);
+        free_if_reg($1);
+        $$ = take_reg();
+        gen_sym_name($$);
+        set_type($$, t1);
+      }
+  | num_exp _AROP heap_root_exp
+      {
         int t1 = get_type($1);    
         code("\n\t\t%s\t", ar_instructions[$2 + (t1 - 1) * AROP_NUMBER]);
         gen_sym_name($1);
@@ -470,9 +643,152 @@ return_statement
       {
         if(get_type(fun_idx) != 1)
           err("incompatible types in return");
-        code("\n\t\tMOV\t\t$%d,", $2);
-        gen_sym_name(FUN_REG);
+        gen_mov($2, FUN_REG);
         code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));
+      }
+  | _RETURN heap_pop_exp _SEMICOLON
+      {
+        if(get_type(fun_idx) != 1)
+          err("incompatible types in return");
+        gen_mov($2, FUN_REG);
+        int idx = $2;
+        int heap_idx = 0;
+        for (int i = 0; i < heap_num; i++) 
+        {
+          if (idx == heap_declarations[i])
+          {
+            heap_idx = i;
+            break;
+          }
+        }
+        
+        int size = get_atr2(idx);
+        int last_element_place = (get_atr1(idx) + size - 1) * 4;
+        int root_element_place = get_atr1(idx) * 4;
+        heaps[heap_idx][0] = heaps[heap_idx][size - 1];
+        heaps[heap_idx][size - 1] = 0;
+        code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", last_element_place, root_element_place);
+        code("\n\t\tMOV\t\t$0,-%d(%%14)", last_element_place);
+        size--;
+        set_atr2(idx, size);
+        int i = 0;
+        while(1)
+        {
+          int propagation_elem = heaps[heap_idx][i];
+          int left_child_idx = 2 * i + 1;
+          int right_child_idx = 2 * i + 2;
+          int left_child = -1;
+          int right_child = -1;
+          if (left_child_idx < size)
+            left_child = heaps[heap_idx][left_child_idx];
+          if (right_child_idx < size)
+            right_child = heaps[heap_idx][right_child_idx];
+          if (left_child == -1 && right_child == -1)
+            break;
+          else if (left_child == -1 && right_child != -1)
+          {
+            if (propagation_elem > right_child)
+            {
+              int elem = heaps[heap_idx][i];
+              heaps[heap_idx][i] = heaps[heap_idx][right_child_idx];
+              heaps[heap_idx][right_child_idx] = elem;
+
+              int reg = take_reg();
+              int propagation_elem_place = (get_atr1(idx) + i) * 4;
+              int right_child_place = (get_atr1(idx) + right_child_idx) * 4;
+              code("\n\t\tMOV\t\t-%d(%%14),", propagation_elem_place);
+              gen_sym_name(reg);
+
+              code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", right_child_place, propagation_elem_place);
+              
+              code("\n\t\tMOV\t\t");
+              gen_sym_name(reg);
+              code(",-%d(%%14)", right_child_place);
+              free_if_reg(reg);
+              i = right_child_idx;
+            }
+            else
+              break;
+          }
+          else if (left_child != -1 && right_child == -1)
+          {
+            if (propagation_elem > left_child)
+            {
+              int elem = heaps[heap_idx][i];
+              heaps[heap_idx][i] = heaps[heap_idx][left_child_idx];
+              heaps[heap_idx][left_child_idx] = elem;
+
+              int reg = take_reg();
+              int propagation_elem_place = (get_atr1(idx) + i) * 4;
+              int left_child_place = (get_atr1(idx) + left_child_idx) * 4;
+              code("\n\t\tMOV\t\t-%d(%%14),", propagation_elem_place);
+              gen_sym_name(reg);
+
+              code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", left_child_place, propagation_elem_place);
+              
+              code("\n\t\tMOV\t\t");
+              gen_sym_name(reg);
+              code(",-%d(%%14)", left_child_place);
+              free_if_reg(reg);
+              i = left_child_idx;
+            }
+            else
+              break;
+          }
+          else if (left_child != -1 && right_child != -1)
+          {
+            if (left_child < right_child)
+            {
+              if (propagation_elem > left_child)
+              {
+                int elem = heaps[heap_idx][i];
+                heaps[heap_idx][i] = heaps[heap_idx][left_child_idx];
+                heaps[heap_idx][left_child_idx] = elem;
+
+                int reg = take_reg();
+                int propagation_elem_place = (get_atr1(idx) + i) * 4;
+                int left_child_place = (get_atr1(idx) + left_child_idx) * 4;
+                code("\n\t\tMOV\t\t-%d(%%14),", propagation_elem_place);
+                gen_sym_name(reg);
+
+                code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", left_child_place, propagation_elem_place);
+                
+                code("\n\t\tMOV\t\t");
+                gen_sym_name(reg);
+                code(",-%d(%%14)", left_child_place);
+                free_if_reg(reg);
+                i = left_child_idx;
+              }
+              else
+                break;
+            }
+            else if (right_child <= left_child)
+            {
+              if (propagation_elem > right_child)
+              {
+                int elem = heaps[heap_idx][i];
+                heaps[heap_idx][i] = heaps[heap_idx][right_child_idx];
+                heaps[heap_idx][right_child_idx] = elem;
+
+                int reg = take_reg();
+                int propagation_elem_place = (get_atr1(idx) + i) * 4;
+                int right_child_place = (get_atr1(idx) + right_child_idx) * 4;
+                code("\n\t\tMOV\t\t-%d(%%14),", propagation_elem_place);
+                gen_sym_name(reg);
+
+                code("\n\t\tMOV\t\t-%d(%%14),-%d(%%14)", right_child_place, propagation_elem_place);
+                
+                code("\n\t\tMOV\t\t");
+                gen_sym_name(reg);
+                code(",-%d(%%14)", right_child_place);
+                free_if_reg(reg);
+                i = right_child_idx;
+              }
+              else
+                break;
+            }
+          }
+        }
       }
   ;
 

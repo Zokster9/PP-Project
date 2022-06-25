@@ -29,6 +29,7 @@
 "isEmpty"            { return _IS_EMPTY; }
 "push"               { return _PUSH; }
 "root"               { return _ROOT; }
+"pop"                { return _POP; }
 
 "+"                  { yylval.i = ADD; return _AROP; }
 "-"                  { yylval.i = SUB; return _AROP; }
