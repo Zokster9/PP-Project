@@ -1,8 +1,9 @@
 //OPIS: heap create
-//RETURN: 8
+//RETURN: 10
 int main() {
     heap h = create_heap();
-    int a; 
+    int a;
+    int b;
 
     h.push(5);
     h.push(6);
@@ -11,7 +12,7 @@ int main() {
     h.push(12);
     h.push(13);
     h.push(3);
-    a = h.pop();
+    h.pop();
     
-    return a + h.root();
+    return h.size() - h.isEmpty() + h.pop();
 }

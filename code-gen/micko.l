@@ -12,7 +12,7 @@
 
 "int"                { yylval.i = INT;  return _TYPE; }
 "unsigned"           { yylval.i = UINT; return _TYPE; }
-"heap"               { yylval.i = HEAP; return _TYPE; }
+"heap"               { yylval.i = INT; return _TYPE; }
 "if"                 { return _IF; }
 "else"               { return _ELSE; }
 "return"             { return _RETURN; }
