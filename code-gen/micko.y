@@ -184,8 +184,10 @@ heap_push_statement
         int idx = lookup_symbol($1, HEAP);
         if (idx == NO_INDEX)
           err("heap '%s' is undeclared", $1);
-        if (get_type($5) != 1)
+        if (get_type($5) != get_type(idx))
           err("incompatible types in assignment");
+        if (get_atr2(idx) == 50)
+          err("heap '%s' reached its capacity!", $1);
         int heap_idx = 0;
         for (int i = 0; i < heap_num; i++) {
           if (idx == heap_declarations[i]) {
