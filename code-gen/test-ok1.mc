@@ -1,4 +1,4 @@
-//OPIS: heap create
+//OPIS: testiranje heap pop-a i push-a
 //RETURN: 10
 int main() {
     heap h = create_heap();

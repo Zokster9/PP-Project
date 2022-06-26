@@ -142,9 +142,14 @@ variable
       {
         if(lookup_symbol($2, VAR|PAR|HEAP) == NO_INDEX)
         {
-          var_num++;
-          int place = (var_num - heap_num) + heap_num * 50;
-          insert_symbol($2, VAR, $1, place, NO_ATR);
+          if ($1 == HEAP_VAR)
+            err("Heap '%s' is declared incorrectly", $2);
+          else
+          {
+            var_num++;
+            int place = (var_num - heap_num) + heap_num * 50;
+            insert_symbol($2, VAR, $1, place, NO_ATR);
+          }
         }
         else
           err("redefinition of '%s'", $2);
@@ -155,7 +160,7 @@ variable
         {
           var_num++;
           int place = (var_num - heap_num) + heap_num * 50;
-          int idx = insert_symbol($2, HEAP, $1, place, 0);
+          int idx = insert_symbol($2, HEAP, 1, place, 0);
           heap_declarations[heap_num] = idx;
           heap_num++;
         }
@@ -578,6 +583,8 @@ exp
         $$ = lookup_symbol($1, HEAP);
         if ($$ == NO_INDEX)
           err("heap '%s' is undeclared", $1);
+        if (get_atr2($$) == 0)
+          err("heap '%s' is empty", $1);
       }
   
   | _ID _DOT _SIZE _LPAREN _RPAREN
@@ -620,9 +627,11 @@ exp
 
   | _ID
       {
-        $$ = lookup_symbol($1, VAR|PAR);
+        $$ = lookup_symbol($1, VAR|PAR|HEAP);
         if($$ == NO_INDEX)
           err("'%s' undeclared", $1);
+        if (get_kind($$) == HEAP)
+          err("'%s' heap unsupported use!", $1);
       }
 
   | function_call

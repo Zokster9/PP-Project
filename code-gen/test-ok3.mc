@@ -1,4 +1,4 @@
-//OPIS: heap isEmpty dodela
+//OPIS: isprobavanje sa 3 heap-a
 //RETURN: 16
 int main() {
     heap h = create_heap();

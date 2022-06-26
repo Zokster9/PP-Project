@@ -1,4 +1,4 @@
-//OPIS: heap size dodela
+//OPIS: koriscenje dva heap-a
 //RETURN: 3
 int main() {
     int a;
