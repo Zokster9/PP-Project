@@ -1,5 +1,5 @@
 //OPIS: koriscenje dva heap-a
-//RETURN: 3
+//RETURN: 4
 int main() {
     int a;
     heap h = create_heap();

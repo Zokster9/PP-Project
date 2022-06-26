@@ -1,5 +1,5 @@
 //OPIS: testiranje heap pop-a i push-a
-//RETURN: 10
+//RETURN: 11
 int main() {
     heap h = create_heap();
     int a;

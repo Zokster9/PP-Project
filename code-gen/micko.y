@@ -611,9 +611,9 @@ exp
           err("heap '%s' is undeclared", $1);
         int num;
         if (get_atr2(idx) == 0)
-          num = 0;
-        else
           num = 1;
+        else
+          num = 0;
         char* string = NULL;
         char* s = NULL;
         s = malloc(sizeof(char *) * 15);

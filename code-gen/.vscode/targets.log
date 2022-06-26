@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun Jun 26 12:29:36 2022
+# Make data base, printed on Sun Jun 26 13:54:16 2022
 
 # Variables
 
@@ -201,7 +201,7 @@ ASM = true
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-014b34ad-16de-4ee5-af46-9d41bc9a0ad0.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-7634fccc-ed3f-4972-93fe-1ef63d8cb0c2.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -261,11 +261,11 @@ LC_ALL = C
 # environment
 DBUS_STARTER_BUS_TYPE = session
 # environment
-GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/a3399e1a_a5da_4780_b79f_bc67094e502a
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/c2f6121a_71d1_41d9_a7de_b37d6c4dcc39
 # automatic
 ^F = $(notdir $^)
 # environment
-GNOME_TERMINAL_SERVICE = :1.76
+GNOME_TERMINAL_SERVICE = :1.587
 # default
 SUFFIXES := 
 # makefile (from 'Makefile', line 19)
@@ -290,7 +290,7 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 2753
+VSCODE_PID = 8158
 # environment
 DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=d63c66e0199a7f6d04dca96f62b834ab
 # variable set hash-table stats:
@@ -302,9 +302,9 @@ DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=d63c66e0199a7f6d04dca96
 
 # Directories
 
-# . (device 2053, inode 1181921): 20 files, no impossibilities.
+# . (device 2053, inode 1181921): 25 files, no impossibilities.
 
-# 20 files, no impossibilities in 1 directories.
+# 25 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -623,12 +623,12 @@ defs.h:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 34 / storage = 294 B / avg = 8 B
-# current buf: size = 8162 B / used = 294 B / count = 34 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 39 / storage = 398 B / avg = 10 B
+# current buf: size = 8162 B / used = 398 B / count = 39 / avg = 10 B
 
-# strcache performance: lookups = 65 / hit rate = 47%
+# strcache performance: lookups = 70 / hit rate = 44%
 # hash-table stats:
-# Load=34/8192=0%, Rehash=0, Collisions=1/65=2%
-# Finished Make data base on Sun Jun 26 12:29:36 2022
+# Load=39/8192=0%, Rehash=0, Collisions=1/70=1%
+# Finished Make data base on Sun Jun 26 13:54:16 2022
 
  
