@@ -1,4 +1,4 @@
-//OPIS: vrsi se pushovanje unsigned literala iz heapa na unsigned varijablu
+//OPIS: vrsi se pushovanje unsigned literala u heapa
 //RETURN: 4
 int main() {
     heap h = create_heap();
